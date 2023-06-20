@@ -4,6 +4,7 @@ import (
 	"math/rand"
 )
 
+// Game represents the game state and data.
 type Game struct {
 	TankID             string
 	Objects            map[string]map[string]interface{}
@@ -11,15 +12,17 @@ type Game struct {
 	CurrentTurnMessage map[string]interface{}
 }
 
+// NewGame creates a new instance of Game and initializes its properties.
 func NewGame() *Game {
 	game := &Game{
 		Objects: make(map[string]map[string]interface{}),
 	}
 
+	// Read the tank ID message
 	tankIDMessage := ReadMessage()
 	game.TankID = tankIDMessage.(map[string]interface{})["message"].(map[string]interface{})["your-tank-id"].(string)
 
-	// read messages until you receive END_INIT_SIGNAL
+	// Read messages until END_INIT_SIGNAL is received
 	nextInitMessage := ReadMessage()
 	_, ok := nextInitMessage.(string)
 	for !ok {
@@ -32,6 +35,7 @@ func NewGame() *Game {
 		_, ok = nextInitMessage.(string)
 	}
 
+	// Find the boundaries and determine the map size
 	var boundaries []map[string]interface{}
 	for _, gameObject := range game.Objects {
 		objectType := int(gameObject["type"].(float64))
@@ -59,6 +63,9 @@ func NewGame() *Game {
 	return game
 }
 
+// ReadNextTurnData reads the next turn data from the game server.
+// It updates the game state based on the received message.
+// Returns true if the game continues, false if the end game signal is received.
 func (g *Game) ReadNextTurnData() bool {
 	rawMessage := ReadMessage()
 
@@ -81,9 +88,10 @@ func (g *Game) ReadNextTurnData() bool {
 	return true
 }
 
+// RespondToTurn is the logic for responding to the current turn.
+// Modify this method with your own logic for responding to the game.
+// This example shoots randomly every turn.
 func (g *Game) RespondToTurn() {
-	// Your logic for responding to the turn goes here.
-	// This example just shoots randomly every turn.
 	shootAngle := rand.Float64() * 360
 	message := map[string]interface{}{
 		"shoot": shootAngle,

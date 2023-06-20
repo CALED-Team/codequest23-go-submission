@@ -1,5 +1,6 @@
 package main
 
+// ParsePosition parses the position array and returns a 2D slice of float64 values.
 func ParsePosition(positionArray []interface{}) [][]float64 {
 	position := make([][]float64, len(positionArray))
 	for i, singlePosition := range positionArray {
